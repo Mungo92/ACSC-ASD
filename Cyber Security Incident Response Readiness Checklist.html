@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Cyber Security Incident Response Readiness Checklist</title>
+    <style>
+        body {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            color: #333;
+            background: #f4f6f8;
+        }
+        .container {
+            max-width: 900px;
+            margin: 50px auto;
+            padding: 20px 40px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        .header {
+            margin-bottom: 20px;
+        }
+        .logo {
+            max-height: 30px;
+        }
+        .top-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        #reset-button {
+            background-color: #0D47A1;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        #reset-button:hover {
+            background-color: #0A397C;
+        }
+        h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #000;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .progress-container {
+            margin-top: 20px;
+            text-align: right;
+            font-size: 18px;
+            font-weight: 600;
+            color: #0D47A1;
+        }
+        .progress-bar {
+            width: 100%;
+            background-color: #e0e0e0;
+            border-radius: 20px;
+            overflow: hidden;
+            height: 20px;
+            margin-top: 10px;
+        }
+        .progress {
+            height: 100%;
+            background-color: #0D47A1;
+            width: 0%;
+            transition: width 0.3s ease-in-out;
+        }
+        .glossary-button-container {
+            text-align: right;
+            margin-top: 20px;
+        }
+        #glossary-button {
+            background-color: #0D47A1;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        #glossary-button:hover {
+            background-color: #0A397C;
+        }
+        .checklist {
+            list-style: none;
+            padding: 0;
+            margin-top: 30px;
+        }
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            padding: 15px 0;
+            border-bottom: 1px solid #ccc;
+        }
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+        .question {
+            flex: 1;
+            font-size: 16px;
+            margin-right: 20px;
+        }
+        .options {
+            display: flex;
+            align-items: center;
+        }
+        .options label {
+            margin-left: 5px;
+            margin-right: 15px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        .options input[type="radio"] {
+            cursor: pointer;
+            width: 18px;
+            height: 18px;
+            accent-color: #0D47A1;
+        }
+        .todo-container {
+            margin-top: 40px;
+        }
+        .todo-container h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #0D47A1;
+            margin-bottom: 20px;
+        }
+        .todo-list {
+            list-style: none;
+            padding: 0;
+        }
+        .todo-item {
+            padding: 10px 0;
+            border-bottom: 1px solid #ccc;
+            font-size: 16px;
+        }
+        .todo-item:last-child {
+            border-bottom: none;
+        }
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal-content {
+            background-color: #fff;
+            margin: 10% auto;
+            padding: 20px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 500px;
+            position: relative;
+        }
+        #close-glossary {
+            background-color: #0D47A1;
+            color: #fff;
+            font-size: 16px;
+            font-weight: 600;
+            padding: 8px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 20px;
+            display: block;
+            width: 100%;
+        }
+        #close-glossary:hover {
+            background-color: #0A397C;
+        }
+        .modal h2 {
+            font-size: 20px;
+            font-weight: 700;
+            color: #0D47A1;
+            margin-bottom: 20px;
+        }
+        .glossary-list {
+            list-style: none;
+            padding: 0;
+        }
+        .glossary-item {
+            margin-bottom: 10px;
+        }
+        .glossary-term {
+            font-weight: 600;
+            color: #0D47A1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="top-bar">
+                <img src="https://ttawebstorage.blob.core.windows.net/brand/logo/ThinkTechnology_logo.png" alt="Logo" class="logo">
+                <button id="reset-button">Reset</button>
+            </div>
+            <h1>Cyber Security Incident Response Readiness Checklist</h1>
+        </div>
+        <div class="progress-container">
+            Compliance Score: <span id="compliance-percentage">0%</span>
+            <div class="progress-bar">
+                <div class="progress" id="progress-bar"></div>
+            </div>
+        </div>
+        <div class="glossary-button-container">
+            <button id="glossary-button">Glossary</button>
+        </div>
+        <ul class="checklist">
+            <!-- Item 1 -->
+            <li class="checklist-item">
+                <div class="question">Your organisation has a cyber security policy or strategy that outlines your approach to prevention, preparedness, detection, response, recovery, review, and improvement.</div>
+                <div class="options">
+                    <input type="radio" id="item1-yes" name="item1" value="yes">
+                    <label for="item1-yes">Yes</label>
+                    <input type="radio" id="item1-no" name="item1" value="no">
+                    <label for="item1-no">No</label>
+                </div>
+            </li>
+            <!-- Item 2 -->
+            <li class="checklist-item">
+                <div class="question">A CSIRP has been developed which aligns with your organisation’s operating environment and has been reviewed or tested in an exercise.</div>
+                <div class="options">
+                    <input type="radio" id="item2-yes" name="item2" value="yes">
+                    <label for="item2-yes">Yes</label>
+                    <input type="radio" id="item2-no" name="item2" value="no">
+                    <label for="item2-no">No</label>
+                </div>
+            </li>
+            <!-- Item 3 -->
+            <li class="checklist-item">
+                <div class="question">Personnel involved in managing cyber security incidents have received cyber security incident response training.</div>
+                <div class="options">
+                    <input type="radio" id="item3-yes" name="item3" value="yes">
+                    <label for="item3-yes">Yes</label>
+                    <input type="radio" id="item3-no" name="item3" value="no">
+                    <label for="item3-no">No</label>
+                </div>
+            </li>
+            <!-- Item 4 -->
+            <li class="checklist-item">
+                <div class="question">Up-to-date hard copy versions of the CSIRP and playbooks are stored in a secure location.</div>
+                <div class="options">
+                    <input type="radio" id="item4-yes" name="item4" value="yes">
+                    <label for="item4-yes">Yes</label>
+                    <input type="radio" id="item4-no" name="item4" value="no">
+                    <label for="item4-no">No</label>
+                </div>
+            </li>
+            <!-- Item 5 -->
+            <li class="checklist-item">
+                <div class="question">Specific playbooks to supplement the CSIRP have been developed.</div>
+                <div class="options">
+                    <input type="radio" id="item5-yes" name="item5" value="yes">
+                    <label for="item5-yes">Yes</label>
+                    <input type="radio" id="item5-no" name="item5" value="no">
+                    <label for="item5-no">No</label>
+                </div>
+            </li>
+            <!-- Item 6 -->
+            <li class="checklist-item">
+                <div class="question">A CSIRT and SEMT, or equivalents, have been identified to manage responses to cyber security incidents.</div>
+                <div class="options">
+                    <input type="radio" id="item6-yes" name="item6" value="yes">
+                    <label for="item6-yes">Yes</label>
+                    <input type="radio" id="item6-no" name="item6" value="no">
+                    <label for="item6-no">No</label>
+                </div>
+            </li>
+            <!-- Item 7 -->
+            <li class="checklist-item">
+                <div class="question">All relevant IT and OT SOPs are documented and have been reviewed or tested.</div>
+                <div class="options">
+                    <input type="radio" id="item7-yes" name="item7" value="yes">
+                    <label for="item7-yes">Yes</label>
+                    <input type="radio" id="item7-no" name="item7" value="no">
+                    <label for="item7-no">No</label>
+                </div>
+            </li>
+            <!-- Item 8 -->
+            <li class="checklist-item">
+                <div class="question">Arrangements for service providers to provide and retain logs have been established and tested.</div>
+                <div class="options">
+                    <input type="radio" id="item8-yes" name="item8" value="yes">
+                    <label for="item8-yes">Yes</label>
+                    <input type="radio" id="item8-no" name="item8" value="no">
+                    <label for="item8-no">No</label>
+                </div>
+            </li>
+            <!-- Item 9 -->
+            <li class="checklist-item">
+                <div class="question">Log retention mechanisms for critical systems, services, and networks have been adequately configured and tested.</div>
+                <div class="options">
+                    <input type="radio" id="item9-yes" name="item9" value="yes">
+                    <label for="item9-yes">Yes</label>
+                    <input type="radio" id="item9-no" name="item9" value="no">
+                    <label for="item9-no">No</label>
+                </div>
+            </li>
+            <!-- Item 10 -->
+            <li class="checklist-item">
+                <div class="question">Your organisation has internal or third-party arrangements and capabilities to detect and analyse cyber security events/incidents.</div>
+                <div class="options">
+                    <input type="radio" id="item10-yes" name="item10" value="yes">
+                    <label for="item10-yes">Yes</label>
+                    <input type="radio" id="item10-no" name="item10" value="no">
+                    <label for="item10-no">No</label>
+                </div>
+            </li>
+            <!-- Item 11 -->
+            <li class="checklist-item">
+                <div class="question">Critical assets (systems, services, and networks) have been identified and documented.</div>
+                <div class="options">
+                    <input type="radio" id="item11-yes" name="item11" value="yes">
+                    <label for="item11-yes">Yes</label>
+                    <input type="radio" id="item11-no" name="item11" value="no">
+                    <label for="item11-no">No</label>
+                </div>
+            </li>
+            <!-- Item 12 -->
+            <li class="checklist-item">
+                <div class="question">SOPs have been developed for use of facilities and communications technologies in response to cyber security incidents.</div>
+                <div class="options">
+                    <input type="radio" id="item12-yes" name="item12" value="yes">
+                    <label for="item12-yes">Yes</label>
+                    <input type="radio" id="item12-no" name="item12" value="no">
+                    <label for="item12-no">No</label>
+                </div>
+            </li>
+            <!-- Item 13 -->
+            <li class="checklist-item">
+                <div class="question">Cyber security incident logging/records and tracking technologies are confirmed as available and have been tested.</div>
+                <div class="options">
+                    <input type="radio" id="item13-yes" name="item13" value="yes">
+                    <label for="item13-yes">Yes</label>
+                    <input type="radio" id="item13-no" name="item13" value="no">
+                    <label for="item13-no">No</label>
+                </div>
+            </li>
+            <!-- Item 14 -->
+            <li class="checklist-item">
+                <div class="question">Role cards have been developed for personnel involved in the CSIRT and the SEMT.</div>
+                <div class="options">
+                    <input type="radio" id="item14-yes" name="item14" value="yes">
+                    <label for="item14-yes">Yes</label>
+                    <input type="radio" id="item14-no" name="item14" value="no">
+                    <label for="item14-no">No</label>
+                </div>
+            </li>
+            <!-- Item 15 -->
+            <li class="checklist-item">
+                <div class="question">Your organisation has internal or third-party arrangements and capabilities to monitor cyber threats.</div>
+                <div class="options">
+                    <input type="radio" id="item15-yes" name="item15" value="yes">
+                    <label for="item15-yes">Yes</label>
+                    <input type="radio" id="item15-no" name="item15" value="no">
+                    <label for="item15-no">No</label>
+                </div>
+            </li>
+            <!-- Item 16 -->
+            <li class="checklist-item">
+                <div class="question">SOPs have been developed for detection, investigation, analysis, and activation of cyber security incidents.</div>
+                <div class="options">
+                    <input type="radio" id="item16-yes" name="item16" value="yes">
+                    <label for="item16-yes">Yes</label>
+                    <input type="radio" id="item16-no" name="item16" value="no">
+                    <label for="item16-no">No</label>
+                </div>
+            </li>
+            <!-- Item 17 -->
+            <li class="checklist-item">
+                <div class="question">SOPs, playbooks, and templates have been developed for containment, evidence collection, and remediation.</div>
+                <div class="options">
+                    <input type="radio" id="item17-yes" name="item17" value="yes">
+                    <label for="item17-yes">Yes</label>
+                    <input type="radio" id="item17-no" name="item17" value="no">
+                    <label for="item17-no">No</label>
+                </div>
+            </li>
+            <!-- Item 18 -->
+            <li class="checklist-item">
+                <div class="question">A secure location is available for storing data captured during cyber security incidents.</div>
+                <div class="options">
+                    <input type="radio" id="item18-yes" name="item18" value="yes">
+                    <label for="item18-yes">Yes</label>
+                    <input type="radio" id="item18-no" name="item18" value="no">
+                    <label for="item18-no">No</label>
+                </div>
+            </li>
+            <!-- Item 19 -->
+            <li class="checklist-item">
+                <div class="question">SOPs, playbooks, and templates have been developed to support communicating with internal and external stakeholders.</div>
+                <div class="options">
+                    <input type="radio" id="item19-yes" name="item19" value="yes">
+                    <label for="item19-yes">Yes</label>
+                    <input type="radio" id="item19-no" name="item19" value="no">
+                    <label for="item19-no">No</label>
+                </div>
+            </li>
+            <!-- Item 20 -->
+            <li class="checklist-item">
+                <div class="question">Your organisation has assigned a public and media spokesperson supported by technical subject matter experts.</div>
+                <div class="options">
+                    <input type="radio" id="item20-yes" name="item20" value="yes">
+                    <label for="item20-yes">Yes</label>
+                    <input type="radio" id="item20-no" name="item20" value="no">
+                    <label for="item20-no">No</label>
+                </div>
+            </li>
+            <!-- Item 21 -->
+            <li class="checklist-item">
+                <div class="question">Processes and procedures are documented to support your organisation to meet its legal and regulatory requirements on cyber security incident notification and reporting.</div>
+                <div class="options">
+                    <input type="radio" id="item21-yes" name="item21" value="yes">
+                    <label for="item21-yes">Yes</label>
+                    <input type="radio" id="item21-no" name="item21" value="no">
+                    <label for="item21-no">No</label>
+                </div>
+            </li>
+            <!-- Item 22 -->
+            <li class="checklist-item">
+                <div class="question">Processes and procedures are documented for communicating with any cyber insurance providers.</div>
+                <div class="options">
+                    <input type="radio" id="item22-yes" name="item22" value="yes">
+                    <label for="item22-yes">Yes</label>
+                    <input type="radio" id="item22-no" name="item22" value="no">
+                    <label for="item22-no">No</label>
+                </div>
+            </li>
+            <!-- Item 23 -->
+            <!-- Item 23 -->
+            <li class="checklist-item">
+                <div class="question">Processes and procedures are documented to support post cyber security incident reviews following the resolution of cyber security incidents.</div>
+                <div class="options">
+                    <input type="radio" id="item23-yes" name="item23" value="yes">
+                    <label for="item23-yes">Yes</label>
+                    <input type="radio" id="item23-no" name="item23" value="no">
+                    <label for="item23-no">No</label>
+                </div>
+            </li>
+        </ul>
+        <div class="todo-container" id="todo-container" style="display:none;">
+            <h2>To-Do List for Remediation</h2>
+            <ul class="todo-list" id="todo-list">
+                <!-- Remediation items will be dynamically added here -->
+            </ul>
+        </div>
+    </div>
+
+    <!-- Glossary Modal -->
+    <div id="glossary-modal" class="modal">
+        <div class="modal-content">
+            <h2>Glossary</h2>
+            <ul class="glossary-list">
+                <li class="glossary-item"><span class="glossary-term">CSIRP:</span> Cyber Security Incident Response Plan</li>
+                <li class="glossary-item"><span class="glossary-term">CSIRT:</span> Cyber Security Incident Response Team</li>
+                <li class="glossary-item"><span class="glossary-term">SEMT:</span> Senior Executive Management Team</li>
+                <li class="glossary-item"><span class="glossary-term">SOP:</span> Standard Operating Procedure</li>
+                <li class="glossary-item"><span class="glossary-term">IT:</span> Information Technology</li>
+                <li class="glossary-item"><span class="glossary-term">OT:</span> Operational Technology</li>
+            </ul>
+            <button id="close-glossary">Close</button>
+        </div>
+    </div>
+
+    <script>
+        const remediationTasks = {
+            "item1": "Develop a cyber security policy or strategy that outlines your organisation's approach to prevention, preparedness, detection, response, recovery, review, and improvement.",
+            "item2": "Develop and review a CSIRP that aligns with your organisation’s operating environment and conduct regular exercises.",
+            "item3": "Provide cyber security incident response training to personnel involved in managing incidents.",
+            "item4": "Store up-to-date hard copies of the CSIRP and playbooks in a secure location.",
+            "item5": "Develop specific playbooks to supplement the CSIRP.",
+            "item6": "Identify a CSIRT and SEMT, or equivalents, to manage responses to cyber security incidents.",
+            "item7": "Document all relevant IT and OT SOPs and conduct reviews or tests.",
+            "item8": "Establish and test arrangements for service providers to provide and retain logs.",
+            "item9": "Configure and test log retention mechanisms for critical systems, services, and networks.",
+            "item10": "Establish internal or third-party capabilities to detect and analyse cyber security events/incidents.",
+            "item11": "Identify and document critical assets (systems, services, and networks).",
+            "item12": "Develop SOPs for the use of facilities and communication technologies during cyber security incidents.",
+            "item13": "Confirm availability and test cyber security incident logging, records, and tracking technologies.",
+            "item14": "Develop role cards for personnel involved in the CSIRT and the SEMT.",
+            "item15": "Establish internal or third-party capabilities to monitor cyber threats.",
+            "item16": "Develop SOPs for detection, investigation, analysis, and activation during cyber security incidents.",
+            "item17": "Develop SOPs, playbooks, and templates for containment, evidence collection, and remediation.",
+            "item18": "Ensure a secure location is available for storing data captured during cyber security incidents.",
+            "item19": "Develop SOPs, playbooks, and templates for communication with internal and external stakeholders.",
+            "item20": "Assign a public and media spokesperson supported by technical subject matter experts.",
+            "item21": "Document processes and procedures to meet legal and regulatory requirements for incident notification and reporting.",
+            "item22": "Document processes and procedures for communicating with cyber insurance providers.",
+            "item23": "Document processes and procedures to support post-incident reviews after resolving cyber security incidents."
+        };
+
+        const totalItems = 23;
+        const checklistItems = document.querySelectorAll('.checklist-item');
+        const todoContainer = document.getElementById('todo-container');
+        const todoList = document.getElementById('todo-list');
+        let selectedTasks = {};
+        const compliancePercentage = document.getElementById('compliance-percentage');
+        const progressBar = document.getElementById('progress-bar');
+        const resetButton = document.getElementById('reset-button');
+        const glossaryButton = document.getElementById('glossary-button');
+        const glossaryModal = document.getElementById('glossary-modal');
+        const closeGlossary = document.getElementById('close-glossary');
+
+        checklistItems.forEach((item, index) => {
+            const yesRadio = item.querySelector(`input[id="item${index + 1}-yes"]`);
+            const noRadio = item.querySelector(`input[id="item${index + 1}-no"]`);
+
+            yesRadio.addEventListener('change', handleRadioChange);
+            noRadio.addEventListener('change', handleRadioChange);
+        });
+
+        resetButton.addEventListener('click', resetChecklist);
+
+        glossaryButton.addEventListener('click', () => {
+            glossaryModal.style.display = 'block';
+        });
+
+        closeGlossary.addEventListener('click', () => {
+            glossaryModal.style.display = 'none';
+        });
+
+        window.addEventListener('click', (event) => {
+            if (event.target == glossaryModal) {
+                glossaryModal.style.display = 'none';
+            }
+        });
+
+        function handleRadioChange() {
+            const itemId = this.name;
+            updateComplianceScore();
+            if (this.value === 'no') {
+                if (!selectedTasks[itemId]) {
+                    selectedTasks[itemId] = remediationTasks[itemId];
+                    renderTodoList();
+                }
+            } else {
+                if (selectedTasks[itemId]) {
+                    delete selectedTasks[itemId];
+                    renderTodoList();
+                }
+            }
+        }
+
+        function renderTodoList() {
+            todoList.innerHTML = '';
+            const tasks = Object.values(selectedTasks);
+            if (tasks.length > 0) {
+                todoContainer.style.display = 'block';
+                tasks.forEach(task => {
+                    const li = document.createElement('li');
+                    li.classList.add('todo-item');
+                    li.textContent = task;
+                    todoList.appendChild(li);
+                });
+            } else {
+                todoContainer.style.display = 'none';
+            }
+        }
+
+        function updateComplianceScore() {
+            const yesRadios = document.querySelectorAll('input[value="yes"]:checked');
+            const yesCount = yesRadios.length;
+            const percentage = Math.round((yesCount / totalItems) * 100);
+            compliancePercentage.textContent = percentage + '%';
+            progressBar.style.width = percentage + '%';
+        }
+
+        function resetChecklist() {
+            const allRadios = document.querySelectorAll('input[type="radio"]');
+            allRadios.forEach(radio => {
+                radio.checked = false;
+            });
+            selectedTasks = {};
+            renderTodoList();
+            compliancePercentage.textContent = '0%';
+            progressBar.style.width = '0%';
+        }
+    </script>
+</body>
+</html>
