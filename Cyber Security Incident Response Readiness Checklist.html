@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Cyber Security Incident Response Readiness Checklist</title>
     <style>
+        /* Base Styles */
         body {
             font-family: 'Helvetica Neue', Arial, sans-serif;
             margin: 0;
@@ -18,6 +19,8 @@
             background-color: #fff;
             border-radius: 8px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 1;
         }
         .header {
             margin-bottom: 20px;
@@ -30,7 +33,7 @@
             align-items: center;
             justify-content: space-between;
         }
-        #reset-button {
+        #reset-button, #save-button, #export-button {
             background-color: #0D47A1;
             color: #fff;
             font-size: 16px;
@@ -39,8 +42,9 @@
             border: none;
             border-radius: 6px;
             cursor: pointer;
+            margin-left: 10px;
         }
-        #reset-button:hover {
+        #reset-button:hover, #save-button:hover, #export-button:hover {
             background-color: #0A397C;
         }
         h1 {
@@ -148,17 +152,17 @@
         .modal {
             display: none;
             position: fixed;
-            z-index: 1000;
+            z-index: 1001;
             left: 0;
             top: 0;
             width: 100%;
             height: 100%;
-            overflow: auto;
+            overflow-y: auto;
             background-color: rgba(0,0,0,0.5);
         }
         .modal-content {
             background-color: #fff;
-            margin: 10% auto;
+            margin: 5% auto;
             padding: 20px;
             border-radius: 8px;
             width: 80%;
@@ -198,14 +202,106 @@
             font-weight: 600;
             color: #0D47A1;
         }
+        /* Popup Form Styles */
+        #popup-form {
+            display: none;
+            position: fixed;
+            z-index: 1002;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            background-color: rgba(0,0,0,0.5);
+        }
+        #popup-form .form-content {
+            background-color: #fff;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 8px;
+            width: 80%;
+            max-width: 500px;
+            position: relative;
+        }
+        #popup-form h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #0D47A1;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .form-field {
+            margin-bottom: 15px;
+        }
+        .form-field label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-field input {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+        #next-button {
+            background-color: #0D47A1;
+            color: #fff;
+            font-size: 18px;
+            font-weight: 600;
+            padding: 10px 0;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 20px;
+        }
+        #next-button:hover {
+            background-color: #0A397C;
+        }
+        /* Background Blur */
+        .blur-background {
+            filter: blur(5px);
+        }
     </style>
 </head>
 <body>
-    <div class="container">
+    <!-- Popup Form -->
+    <div id="popup-form">
+        <div class="form-content">
+            <h2>Please Enter Your Details</h2>
+            <div class="form-field">
+                <label for="user-name">Name</label>
+                <input type="text" id="user-name" required>
+            </div>
+            <div class="form-field">
+                <label for="business-name">Business Name</label>
+                <input type="text" id="business-name" required>
+            </div>
+            <div class="form-field">
+                <label for="business-size">Number of People in the Business</label>
+                <input type="number" id="business-size" min="1" required>
+            </div>
+            <div class="form-field">
+                <label for="email-address">Email Address</label>
+                <input type="email" id="email-address" required>
+            </div>
+            <button id="next-button">Next</button>
+        </div>
+    </div>
+
+    <div class="container" id="main-container">
         <div class="header">
             <div class="top-bar">
                 <img src="https://ttawebstorage.blob.core.windows.net/brand/logo/ThinkTechnology_logo.png" alt="Logo" class="logo">
-                <button id="reset-button">Reset</button>
+                <div>
+                    <button id="export-button">Export</button>
+                    <button id="save-button">Save Progress</button>
+                    <button id="reset-button">Reset</button>
+                </div>
             </div>
             <h1>Cyber Security Incident Response Readiness Checklist</h1>
         </div>
@@ -219,6 +315,7 @@
             <button id="glossary-button">Glossary</button>
         </div>
         <ul class="checklist">
+            <!-- Checklist Items -->
             <!-- Item 1 -->
             <li class="checklist-item">
                 <div class="question">Your organisation has a cyber security policy or strategy that outlines your approach to prevention, preparedness, detection, response, recovery, review, and improvement.</div>
@@ -440,7 +537,6 @@
                 </div>
             </li>
             <!-- Item 23 -->
-            <!-- Item 23 -->
             <li class="checklist-item">
                 <div class="question">Processes and procedures are documented to support post cyber security incident reviews following the resolution of cyber security incidents.</div>
                 <div class="options">
@@ -474,6 +570,10 @@
             <button id="close-glossary">Close</button>
         </div>
     </div>
+
+    <!-- Include jsPDF and html2canvas libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
     <script>
         const remediationTasks = {
@@ -510,9 +610,34 @@
         const compliancePercentage = document.getElementById('compliance-percentage');
         const progressBar = document.getElementById('progress-bar');
         const resetButton = document.getElementById('reset-button');
+        const saveButton = document.getElementById('save-button');
+        const exportButton = document.getElementById('export-button');
         const glossaryButton = document.getElementById('glossary-button');
         const glossaryModal = document.getElementById('glossary-modal');
         const closeGlossary = document.getElementById('close-glossary');
+        const popupForm = document.getElementById('popup-form');
+        const nextButton = document.getElementById('next-button');
+        const userNameInput = document.getElementById('user-name');
+        const businessNameInput = document.getElementById('business-name');
+        const businessSizeInput = document.getElementById('business-size');
+        const emailAddressInput = document.getElementById('email-address');
+        const mainContainer = document.getElementById('main-container');
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', () => {
+            // Check if user details are saved
+            const userDetails = JSON.parse(localStorage.getItem('userDetails'));
+            if (!userDetails) {
+                showPopupForm();
+            } else {
+                hidePopupForm();
+            }
+
+            // Load saved progress
+            loadProgress();
+            updateComplianceScore();
+            renderTodoList();
+        });
 
         checklistItems.forEach((item, index) => {
             const yesRadio = item.querySelector(`input[id="item${index + 1}-yes"]`);
@@ -520,9 +645,21 @@
 
             yesRadio.addEventListener('change', handleRadioChange);
             noRadio.addEventListener('change', handleRadioChange);
+
+            // Load saved answers
+            const savedAnswer = localStorage.getItem(`item${index + 1}`);
+            if (savedAnswer) {
+                if (savedAnswer === 'yes') {
+                    yesRadio.checked = true;
+                } else if (savedAnswer === 'no') {
+                    noRadio.checked = true;
+                }
+            }
         });
 
         resetButton.addEventListener('click', resetChecklist);
+        saveButton.addEventListener('click', saveProgress);
+        exportButton.addEventListener('click', exportToPDF);
 
         glossaryButton.addEventListener('click', () => {
             glossaryModal.style.display = 'block';
@@ -535,6 +672,13 @@
         window.addEventListener('click', (event) => {
             if (event.target == glossaryModal) {
                 glossaryModal.style.display = 'none';
+            }
+        });
+
+        nextButton.addEventListener('click', () => {
+            if (validateForm()) {
+                saveUserDetails();
+                hidePopupForm();
             }
         });
 
@@ -587,6 +731,177 @@
             renderTodoList();
             compliancePercentage.textContent = '0%';
             progressBar.style.width = '0%';
+            localStorage.clear();
+            showPopupForm();
+        }
+
+        function saveProgress() {
+            // Save user responses
+            checklistItems.forEach((item, index) => {
+                const yesRadio = item.querySelector(`input[id="item${index + 1}-yes"]`);
+                const noRadio = item.querySelector(`input[id="item${index + 1}-no"]`);
+
+                if (yesRadio.checked) {
+                    localStorage.setItem(`item${index + 1}`, 'yes');
+                } else if (noRadio.checked) {
+                    localStorage.setItem(`item${index + 1}`, 'no');
+                } else {
+                    localStorage.removeItem(`item${index + 1}`);
+                }
+            });
+            alert('Progress has been saved.');
+        }
+
+        function loadProgress() {
+            // Load saved responses
+            checklistItems.forEach((item, index) => {
+                const yesRadio = item.querySelector(`input[id="item${index + 1}-yes"]`);
+                const noRadio = item.querySelector(`input[id="item${index + 1}-no"]`);
+
+                const savedAnswer = localStorage.getItem(`item${index + 1}`);
+                if (savedAnswer === 'yes') {
+                    yesRadio.checked = true;
+                    handleRadioChange.call(yesRadio);
+                } else if (savedAnswer === 'no') {
+                    noRadio.checked = true;
+                    handleRadioChange.call(noRadio);
+                }
+            });
+        }
+
+        function showPopupForm() {
+            popupForm.style.display = 'block';
+            mainContainer.classList.add('blur-background');
+        }
+
+        function hidePopupForm() {
+            popupForm.style.display = 'none';
+            mainContainer.classList.remove('blur-background');
+        }
+
+        function validateForm() {
+            if (userNameInput.value.trim() === '' ||
+                businessNameInput.value.trim() === '' ||
+                businessSizeInput.value.trim() === '' ||
+                emailAddressInput.value.trim() === '') {
+                alert('Please fill in all the fields.');
+                return false;
+            }
+            return true;
+        }
+
+        function saveUserDetails() {
+            const userDetails = {
+                name: userNameInput.value.trim(),
+                businessName: businessNameInput.value.trim(),
+                businessSize: businessSizeInput.value.trim(),
+                emailAddress: emailAddressInput.value.trim()
+            };
+            localStorage.setItem('userDetails', JSON.stringify(userDetails));
+        }
+
+        async function exportToPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF('p', 'mm', 'a4');
+            const userDetails = JSON.parse(localStorage.getItem('userDetails'));
+            const complianceScore = compliancePercentage.textContent;
+            const logoSrc = 'https://ttawebstorage.blob.core.windows.net/brand/logo/ThinkTechnology_logo.png';
+
+            // Front Page
+            const logo = await getBase64ImageFromURL(logoSrc);
+            doc.addImage(logo, 'PNG', 10, 10, 50, 15);
+            doc.setFontSize(20);
+            doc.text('Cyber Security Incident Response Readiness Checklist', 105, 40, null, null, 'center');
+
+            doc.setFontSize(14);
+            doc.text(`Name: ${userDetails.name}`, 20, 60);
+            doc.text(`Business Name: ${userDetails.businessName}`, 20, 70);
+            doc.text(`Number of People in the Business: ${userDetails.businessSize}`, 20, 80);
+            doc.text(`Email Address: ${userDetails.emailAddress}`, 20, 90);
+
+            doc.setFontSize(16);
+            doc.text(`Compliance Score: ${complianceScore}`, 105, 110, null, null, 'center');
+
+            // Move to next page
+            doc.addPage();
+
+            // Checklist Responses
+            doc.setFontSize(18);
+            doc.text('Checklist Responses', 105, 20, null, null, 'center');
+
+            doc.setFontSize(12);
+            let yPosition = 30;
+
+            for (let i = 0; i < totalItems; i++) {
+                const question = checklistItems[i].querySelector('.question').textContent.trim();
+                const yesRadio = checklistItems[i].querySelector(`input[id="item${i + 1}-yes"]`);
+                const noRadio = checklistItems[i].querySelector(`input[id="item${i + 1}-no"]`);
+                let answer = 'Not Answered';
+                if (yesRadio.checked) {
+                    answer = 'Yes';
+                } else if (noRadio.checked) {
+                    answer = 'No';
+                }
+
+                const text = `${i + 1}. ${question}\nAnswer: ${answer}`;
+                const splitText = doc.splitTextToSize(text, 170);
+                if (yPosition + splitText.length * 7 > 280) {
+                    doc.addPage();
+                    yPosition = 20;
+                }
+                doc.text(splitText, 20, yPosition);
+                yPosition += splitText.length * 7 + 5;
+            }
+
+            // To-Do List
+            doc.addPage();
+            doc.setFontSize(18);
+            doc.text('To-Do List for Remediation', 105, 20, null, null, 'center');
+
+            const tasks = Object.values(selectedTasks);
+            if (tasks.length > 0) {
+                doc.setFontSize(12);
+                yPosition = 30;
+                tasks.forEach((task, index) => {
+                    const text = `${index + 1}. ${task}`;
+                    const splitText = doc.splitTextToSize(text, 170);
+                    if (yPosition + splitText.length * 7 > 280) {
+                        doc.addPage();
+                        yPosition = 20;
+                    }
+                    doc.text(splitText, 20, yPosition);
+                    yPosition += splitText.length * 7 + 5;
+                });
+            } else {
+                doc.setFontSize(14);
+                doc.text('No remediation tasks required.', 20, 30);
+            }
+
+            // Back Page with Contact Details
+            doc.addPage();
+            doc.setFontSize(18);
+            doc.text('Contact Us', 105, 20, null, null, 'center');
+
+            doc.setFontSize(14);
+            doc.text('Solutions', 20, 40);
+            doc.text('Phone: 1300 920 866', 20, 50);
+            doc.text('Website: https://www.thinktechnology.com.au/', 20, 60);
+            doc.text('E-Mail: business@thinktechnology.com.au', 20, 70);
+
+            // Save the PDF
+            doc.save('Cyber_Security_Readiness_Checklist.pdf');
+        }
+
+        async function getBase64ImageFromURL(url) {
+            const res = await fetch(url);
+            const blob = await res.blob();
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.addEventListener('load', () => {
+                    resolve(reader.result);
+                });
+                reader.readAsDataURL(blob);
+            });
         }
     </script>
 </body>
